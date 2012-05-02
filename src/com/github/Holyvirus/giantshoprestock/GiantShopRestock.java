@@ -38,7 +38,7 @@ public class GiantShopRestock extends JavaPlugin{
 	public static GiantShopRestock GR;
 	
 	GSRstocker GSRS = new GSRstocker();
-	
+	GSRTime GSRT = new GSRTime();
 	public GiantShopRestock() {
 		setGR();
 	}
@@ -105,8 +105,6 @@ public class GiantShopRestock extends JavaPlugin{
 	            e.printStackTrace();
 	        }
 	    }
-	    
-		GSRTime GSRT = new GSRTime();
 		
 	    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
     		if(cmd.getName().equalsIgnoreCase("restock") || cmd.getName().equalsIgnoreCase("rs")){

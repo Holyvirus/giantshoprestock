@@ -9,7 +9,7 @@ public class GSRTime {
 	GSRTime GSRT = this;
 	GSRstocker GSRS = new GSRstocker();
 	GiantShopRestock GSR = GiantShopRestock.getGR();
-	long restockday = GSR.getConfig().getLong("RestockDay");
+	long restockday = GSR.config.getLong("RestockDay") *  86400;
 	
     public int getTime() {
         long Mtime = Calendar.getInstance(Calendar.getInstance().getTimeZone()).getTimeInMillis();
