@@ -1,0 +1,5 @@
+Restock:
+TimeZoneIncrease: 0
+RestockDay: 1728000
+RestockTime: 12:00
+AllowOverStock: false

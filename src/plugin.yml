@@ -1,0 +1,21 @@
+name: GiantShopRestock
+main: com.github.Holyvirus.giantshoprestock.GiantShopRestock
+version: 1.0
+depend: [GiantShop]
+permissions:
+    giantshop.restock:
+        description: Allow user to collect rent!
+        default: op   
+commands:
+   restock:
+      description: Restock giant shop!
+      usage: /<command> collect
+   rs:
+      description: Restock giant shop!
+      usage: /<command> collect
+   restocktime:
+      description: Giant shop restock time!
+      usage: /<command> collect
+   rst:
+      description: Giant shop restock time!
+      usage: /<command> collect
