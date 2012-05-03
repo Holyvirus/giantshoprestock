@@ -1,6 +1,7 @@
 package com.github.Holyvirus.giantshoprestock;
 
 import java.util.Calendar;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 
@@ -23,7 +24,8 @@ public class GSRTime {
     }
 	
     public long getDelay(){
-    	String[] data = GSR.config.getString("RestockTime").split(":");
+    	String[] data = GSR.config.getString("RestockTime").split(".");
+    	GSR.log.log(Level.SEVERE, "the string i got is: " + GSR.config.getString("RestockTime"));
 		int h = Integer.parseInt(data[0]);
 		int m = Integer.parseInt(data[1]);
 		this.runtime = h * 3600 + m * 60;

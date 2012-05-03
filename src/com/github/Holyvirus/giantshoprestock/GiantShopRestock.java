@@ -68,7 +68,6 @@ public class GiantShopRestock extends JavaPlugin{
 	
 	@Override
 	public void onDisable() {
-		BS.cancelTasks(GR);
 		log.log(Level.INFO, "[GiantShopRestock] Was successfully disabled!");
 	}
 
@@ -114,11 +113,9 @@ public class GiantShopRestock extends JavaPlugin{
 	    		if (sender.hasPermission("giantshop.restock")){
 	    			if(args.length == 1){
 	    				if(args[0].equalsIgnoreCase("start")){
-	    	    			BS.cancelTasks(GR);
 	    	    			GSRT.doTask();
 	    	    			sender.sendMessage(ChatColor.GOLD + "The restock system has been started! Your next restock is in: " + "¤9" + GSRT.getTimeLeft());
 	    				}else if(args[0].equalsIgnoreCase("stop")){
-	    	    			BS.cancelTasks(GR);
 	    	    			sender.sendMessage(ChatColor.RED + "The restock system has been stopped! All delays were reset!");
 	    				}
 	    			}else if(args.length == 2){
@@ -142,7 +139,7 @@ public class GiantShopRestock extends JavaPlugin{
 						write(sender, FItem, FAmt);
 	    			}
 	    			}else{
-	    				sender.sendMessage(ChatColor.RED + "");
+	    				sender.sendMessage(ChatColor.RED + "Please enter more arguements!");
 	    			}
 	    		}else{
 	    			sender.sendMessage(ChatColor.RED + "You do not have permission to use this command!");
@@ -166,8 +163,7 @@ public class GiantShopRestock extends JavaPlugin{
 	    public void write(CommandSender sender, String Item, int FAmt){
 	    	ItemID FItem = GSItems.getItemIDByName(Item);
 	    	if(GSItems.isValidItem(FItem.getId())){
-	    		List<String> RS = getConfig().getStringList("Restock");
-	    		RS.add(Item + "." + FAmt);
+	    		getConfig().set("Restock." + Item, FAmt);
 	    		try {
 					getConfig().save(configFile);
 				} catch (IOException e) {
@@ -180,8 +176,7 @@ public class GiantShopRestock extends JavaPlugin{
 	    
 	    public void write(CommandSender sender, int FItem, int FType, int FAmt){
 	    	if(GSItems.isValidItem(FItem, FType)){
-	    		List<String> RS = getConfig().getStringList("Restock");
-	    		RS.add(FItem + "." + FAmt);
+	    		getConfig().set("Restock." + FItem, FAmt);
 	    		try {
 					getConfig().save(configFile);
 				} catch (IOException e) {
