@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,8 +38,6 @@ public class GiantShopRestock extends JavaPlugin{
 	public ItemID enteredItem;
 	public static GiantShopRestock GR;
 	
-	GSRstocker GSRS = new GSRstocker();
-	GSRTime GSRT = new GSRTime();
 	public GiantShopRestock() {
 		setGR();
 	}
@@ -59,9 +58,14 @@ public class GiantShopRestock extends JavaPlugin{
 	    config = new YamlConfiguration();
 	    loadYamls();
 		GSItems = GiantShopAPI.Obtain().getItemHandlerAPI();
+		this.GSRS = new GSRstocker();
+		this.GSRT = new GSRTime();
 		log.log(Level.INFO, "[GiantShopRestock] Was successfully enabled!");
 	}
-
+	
+	public GSRstocker GSRS;
+	public GSRTime GSRT;
+	
 	@Override
 	public void onDisable() {
 		BS.cancelTasks(GR);
@@ -105,55 +109,86 @@ public class GiantShopRestock extends JavaPlugin{
 	            e.printStackTrace();
 	        }
 	    }
-		
 	    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
-    		if(cmd.getName().equalsIgnoreCase("restock") || cmd.getName().equalsIgnoreCase("rs")){
-    	    	if (sender.hasPermission("giantshop.restock")){
-    	    		if(args[0] == "start"){
-    	    			BS.cancelTasks(GR);
-    	    			GSRT.doTask();
-    	    			sender.sendMessage(ChatColor.GOLD + "The restock system has been started! Your next restock is in: " + "¤9" + GSRT.getTimeLeft());
-    	    		}else if(args[0] == "stop"){
-    	    			BS.cancelTasks(GR);
-    	    			sender.sendMessage(ChatColor.RED + "The restock system has been stopped! All delays were reset!");
-    	    		}else if(args[0].matches("^[a-zA-Z_]+$") ) {
-    	    			String FItem = args[0];
-						int FAmt = Integer.parseInt(args[1]);
-						config.getIntegerList("Restock." + FItem).add(FAmt);
-	    	    		sender.sendMessage("The item: " + FItem + " will restock by " + FAmt + " each time!");
-    	    		}else if(args[0].matches("[0-9]+") && args[1].matches("[0-9]+")) {
-			    		int item = Integer.parseInt(args[0]);
-						String itemName = GSItems.getItemNameByID(item);
-						String FItem = itemName;
-						int FAmt = Integer.parseInt(args[1]);
-						config.getIntegerList("Restock." + FItem).add(FAmt);
-	    	    		sender.sendMessage("The item: " + FItem + " will restock by " + FAmt + " each time!");
-    	    		}else if(args[0].matches("[0-9]+:[0-9]+")){
+	    	if(cmd.getName().equalsIgnoreCase("restock") || cmd.getName().equalsIgnoreCase("rs")){
+	    		if (sender.hasPermission("giantshop.restock")){
+	    			if(args.length == 1){
+	    				if(args[0].equalsIgnoreCase("start")){
+	    	    			BS.cancelTasks(GR);
+	    	    			GSRT.doTask();
+	    	    			sender.sendMessage(ChatColor.GOLD + "The restock system has been started! Your next restock is in: " + "¤9" + GSRT.getTimeLeft());
+	    				}else if(args[0].equalsIgnoreCase("stop")){
+	    	    			BS.cancelTasks(GR);
+	    	    			sender.sendMessage(ChatColor.RED + "The restock system has been stopped! All delays were reset!");
+	    				}
+	    			}else if(args.length == 2){
+	    				if(args[0].matches("[0-9]+") && args[1].matches("[0-9]+")) {
+	    					String FItem = args[0];
+	    					int FAmt = Integer.parseInt(args[1]);
+	    					write(sender, FItem, FAmt);
+	    			}else if(args[0].matches("[0-9]+:[0-9]+") && args[1].matches("[0-9]+")){
 		    			try {
 							String[] data = args[0].split(":");
-							int itemID = Integer.parseInt(data[0]);
-							int itemType = Integer.parseInt(data[1]);
-							String itemName = GSItems.getItemNameByID(itemID, itemType);
-			    			String FItem = itemName;
+							int FItem = Integer.parseInt(data[0]);
+							int FType = Integer.parseInt(data[1]);
 							int FAmt = Integer.parseInt(args[1]);
-							config.getIntegerList("Restock." + FItem).add(FAmt);
-		    	    		sender.sendMessage("The item: " + FItem + " will restock by " + FAmt + " each time!");
-						}catch(NumberFormatException e) {
-							e.printStackTrace();
-						}
-    	    		}
-    		}
-    		}else if(cmd.getName().equalsIgnoreCase("restocktime") || cmd.getName().equalsIgnoreCase("rst")){
-    			if(args.length < 1){
-    				sender.sendMessage(ChatColor.GOLD + "The current time is: " + GSRT.getTime() + "the shop will next restock in: " + "¤9" + GSRT.getTimeLeft());
-    			}else if(args.length == 1){
-    			if (sender.hasPermission("giantshop.restock")){
-    			config.set("RestockTime", args[0]);
-    			sender.sendMessage("The shops will restock every: " + args[0] + "days!");
-    			this.saveYamls();
-    			}
-    			}
-    		}
-    		return true;
+							write(sender, FItem, FType, FAmt);
+		    			}catch(NumberFormatException e) {
+							e.printStackTrace();	
+		    			}
+	    			}else if(args[0].matches("^[a-zA-Z_]+$") ) {
+    	    			String FItem = args[0];
+    	    			int FAmt = Integer.parseInt(args[1]);
+						write(sender, FItem, FAmt);
+	    			}
+	    			}else{
+	    				sender.sendMessage(ChatColor.RED + "");
+	    			}
+	    		}else{
+	    			sender.sendMessage(ChatColor.RED + "You do not have permission to use this command!");
+	    		}
+	    	}else if(cmd.getName().equalsIgnoreCase("restocktime") || cmd.getName().equalsIgnoreCase("rst")){
+	    		if(args.length < 1){
+					sender.sendMessage(ChatColor.GOLD + "The current time is: " + GSRT.getTime() + "the shop will next restock in: " + "¤9" + GSRT.getTimeLeft());
+				}else if(args.length == 1){
+				if (sender.hasPermission("giantshop.restock")){
+				config.set("RestockTime", args[0]);
+				sender.sendMessage("The shops will restock every: " + args[0] + "days!");
+				this.saveYamls();
+				}else{
+					sender.sendMessage(ChatColor.RED + "You have entered too many arguments!");
+				}
+	    	}
+	    	}
+	    	return true;
+	    }
+
+	    public void write(CommandSender sender, String Item, int FAmt){
+	    	ItemID FItem = GSItems.getItemIDByName(Item);
+	    	if(GSItems.isValidItem(FItem.getId())){
+	    		List<String> RS = getConfig().getStringList("Restock");
+	    		RS.add(Item + "." + FAmt);
+	    		try {
+					getConfig().save(configFile);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	    	}else{
+	    		sender.sendMessage("You have not specified a valid item!");
+	    	}
+	    }
+	    
+	    public void write(CommandSender sender, int FItem, int FType, int FAmt){
+	    	if(GSItems.isValidItem(FItem, FType)){
+	    		List<String> RS = getConfig().getStringList("Restock");
+	    		RS.add(FItem + "." + FAmt);
+	    		try {
+					getConfig().save(configFile);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	    	}else{
+	    		sender.sendMessage("You have not specified a valid item!");
+	    	}
 	    }
 }
