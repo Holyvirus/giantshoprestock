@@ -65,6 +65,7 @@ public class GiantShopRestock extends JavaPlugin{
 	
 	public GSRstocker GSRS;
 	public GSRTime GSRT;
+	public long lastTime = 0;
 	
 	@Override
 	public void onDisable() {
@@ -116,7 +117,12 @@ public class GiantShopRestock extends JavaPlugin{
 	    	    			GSRT.doTask();
 	    	    			sender.sendMessage(ChatColor.GOLD + "The restock system has been started! Your next restock is in: " + "¤9" + GSRT.getTimeLeft());
 	    				}else if(args[0].equalsIgnoreCase("stop")){
-	    	    			sender.sendMessage(ChatColor.RED + "The restock system has been stopped! All delays were reset!");
+	    					if(BS.isCurrentlyRunning(GSRT.doTaskID)){
+	    						BS.cancelTask(GSRT.doTaskID);
+	    						sender.sendMessage(ChatColor.RED + "The restock system has been stopped! All delays were reset!");
+	    					}else{
+	    		    			sender.sendMessage(ChatColor.RED + "The restock task is NOT running atm! Please type \"/rs start\" to start restocking!");
+	    					}
 	    				}
 	    			}else if(args.length == 2){
 	    				if(args[0].matches("[0-9]+") && args[1].matches("[0-9]+")) {
@@ -145,17 +151,21 @@ public class GiantShopRestock extends JavaPlugin{
 	    			sender.sendMessage(ChatColor.RED + "You do not have permission to use this command!");
 	    		}
 	    	}else if(cmd.getName().equalsIgnoreCase("restocktime") || cmd.getName().equalsIgnoreCase("rst")){
-	    		if(args.length < 1){
-					sender.sendMessage(ChatColor.GOLD + "The current time is: " + GSRT.getTime() + "the shop will next restock in: " + "¤9" + GSRT.getTimeLeft());
-				}else if(args.length == 1){
-				if (sender.hasPermission("giantshop.restock")){
-				config.set("RestockTime", args[0]);
-				sender.sendMessage("The shops will restock every: " + args[0] + "days!");
-				this.saveYamls();
-				}else{
-					sender.sendMessage(ChatColor.RED + "You have entered too many arguments!");
-				}
-	    	}
+	    		if(BS.isCurrentlyRunning(GSRT.doTaskID)){
+	    			if(args.length < 1){
+	    				sender.sendMessage(ChatColor.GOLD + "The current time is: " + GSRT.humanNowTime + "the shop will next restock in: " + "¤9" + GSRT.getTimeLeft());
+	    			}else if(args.length == 1){
+	    					if (sender.hasPermission("giantshop.restock")){
+	    							config.set("RestockTime", args[0]);
+	    							sender.sendMessage("The shops will restock every: " + args[0] + "days!");
+	    							this.saveYamls();
+	    					}else{
+	    						sender.sendMessage(ChatColor.RED + "You have entered too many arguments!");
+	    					}
+	    			}
+	    		}else{
+	    			sender.sendMessage(ChatColor.GOLD + "The restock task is NOT running atm! Please type \"/rs start\" to start restocking!");
+	    		}
 	    	}
 	    	return true;
 	    }
