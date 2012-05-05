@@ -147,9 +147,10 @@ public class GiantShopRestock extends JavaPlugin{
 	    		}
 	    	}else if(cmd.getName().equalsIgnoreCase("restocktime") || cmd.getName().equalsIgnoreCase("rst")){
 				log.log(Level.SEVERE, "the doTaskID is: " + GSRT.doTaskID);
-	    			if(args.length < 1){
+	    			if(args.length == 0){
 	    				if(Bukkit.getServer().getScheduler().isCurrentlyRunning(GSRT.doTaskID)){
 	    				sender.sendMessage(ChatColor.GOLD + "The current time is: " + GSRT.humanNowTime + " the shop will next restock in: " + "¤9" + GSRT.getTimeLeft());
+	    				}
 	    			}else if(args.length == 1){
 	    				if(!Bukkit.getServer().getScheduler().isCurrentlyRunning(GSRT.doTaskID)){
 	    					if (sender.hasPermission("giantshop.restock")){
@@ -160,10 +161,9 @@ public class GiantShopRestock extends JavaPlugin{
 	    						sender.sendMessage(ChatColor.RED + "You have entered too many arguments!");
 	    					}
 	    				}
-	    			}
 	    		}else{
 					log.log(Level.SEVERE, "the doTaskID is: " + GSRT.doTaskID);
-	    			sender.sendMessage(ChatColor.GOLD + "The restock task is NOT running atm! Please type \"/rs start\" to start restocking!");
+	    			sender.sendMessage(ChatColor.GOLD + "The restock task is NOT running atm! Please type \"/rs start\" to start restocking!-blah");
 	    		}
 	    	}
 	    	return true;
