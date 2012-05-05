@@ -147,10 +147,11 @@ public class GiantShopRestock extends JavaPlugin{
 	    		}
 	    	}else if(cmd.getName().equalsIgnoreCase("restocktime") || cmd.getName().equalsIgnoreCase("rst")){
 				log.log(Level.SEVERE, "the doTaskID is: " + GSRT.doTaskID);
-    					if(Bukkit.getServer().getScheduler().isCurrentlyRunning(GSRT.doTaskID)){
 	    			if(args.length < 1){
+	    				if(Bukkit.getServer().getScheduler().isCurrentlyRunning(GSRT.doTaskID)){
 	    				sender.sendMessage(ChatColor.GOLD + "The current time is: " + GSRT.humanNowTime + " the shop will next restock in: " + "¤9" + GSRT.getTimeLeft());
 	    			}else if(args.length == 1){
+	    				if(!Bukkit.getServer().getScheduler().isCurrentlyRunning(GSRT.doTaskID)){
 	    					if (sender.hasPermission("giantshop.restock")){
 	    							config.set("RestockTime", args[0]);
 	    							sender.sendMessage("The shops will restock every: " + args[0] + "days!");
@@ -158,6 +159,7 @@ public class GiantShopRestock extends JavaPlugin{
 	    					}else{
 	    						sender.sendMessage(ChatColor.RED + "You have entered too many arguments!");
 	    					}
+	    				}
 	    			}
 	    		}else{
 					log.log(Level.SEVERE, "the doTaskID is: " + GSRT.doTaskID);
