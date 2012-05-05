@@ -109,15 +109,21 @@ public class GiantShopRestock extends JavaPlugin{
 	    		if (sender.hasPermission("giantshop.restock")){
 	    			if(args.length == 1){
 	    				if(args[0].equalsIgnoreCase("start")){
+	    					if(!Bukkit.getServer().getScheduler().isQueued(GSRT.doTaskID)){
 	    	    			GSRT.doTask();
 	    	    			sender.sendMessage(ChatColor.GOLD + "The restock system has been started! Your next restock is in: ¤9" + GSRT.getTimeLeft());
+	    					}else{
+	    						sender.sendMessage(ChatColor.RED + "The restock task is already running!");
+	    					}
 	    				}else if(args[0].equalsIgnoreCase("stop")){
-	    					if(Bukkit.getServer().getScheduler().isCurrentlyRunning(GSRT.doTaskID)){
+	    					if(Bukkit.getServer().getScheduler().isQueued(GSRT.doTaskID)){
 	    						Bukkit.getServer().getScheduler().cancelTask(GSRT.doTaskID);
 	    						sender.sendMessage(ChatColor.RED + "The restock system has been stopped! All delays were reset!");
 	    					}else{
 	    		    			sender.sendMessage(ChatColor.RED + "The restock task is NOT running atm! Please type \"/rs start\" to start restocking!");
 	    					}
+	    				}else{
+	    					sender.sendMessage(ChatColor.RED + "Please enter the arguements correctly!");
 	    				}
 	    			}else if(args.length == 2){
 	    				if(args[0].matches("[0-9]+") && args[1].matches("[0-9]+")) {
@@ -148,22 +154,24 @@ public class GiantShopRestock extends JavaPlugin{
 	    	}else if(cmd.getName().equalsIgnoreCase("restocktime") || cmd.getName().equalsIgnoreCase("rst")){
 				log.log(Level.SEVERE, "the doTaskID is: " + GSRT.doTaskID);
 	    			if(args.length == 0){
-	    				if(Bukkit.getServer().getScheduler().isCurrentlyRunning(GSRT.doTaskID)){
-	    				sender.sendMessage(ChatColor.GOLD + "The current time is: " + GSRT.humanNowTime + " the shop will next restock in: " + "¤9" + GSRT.getTimeLeft());
+	    				if(Bukkit.getServer().getScheduler().isQueued(GSRT.doTaskID)){
+	    					sender.sendMessage(ChatColor.GOLD + "The current time is: " + GSRT.humanNowTime + " the shop will next restock in: ¤9" + GSRT.getTimeLeft());
+	    				}else{
+	    					sender.sendMessage("I was here");
 	    				}
 	    			}else if(args.length == 1){
-	    				if(!Bukkit.getServer().getScheduler().isCurrentlyRunning(GSRT.doTaskID)){
+	    				if(!Bukkit.getServer().getScheduler().isQueued(GSRT.doTaskID)){
 	    					if (sender.hasPermission("giantshop.restock")){
-	    							config.set("RestockTime", args[0]);
-	    							sender.sendMessage("The shops will restock every: " + args[0] + "days!");
+	    							config.set("RestockDay", args[0]);
+	    							sender.sendMessage("The shops will restock every: " + args[0] + " days!");
 	    							this.saveYamls();
 	    					}else{
-	    						sender.sendMessage(ChatColor.RED + "You have entered too many arguments!");
+	    						sender.sendMessage(ChatColor.RED + "You do not have permission to use this command!");
 	    					}
 	    				}
 	    		}else{
 					log.log(Level.SEVERE, "the doTaskID is: " + GSRT.doTaskID);
-	    			sender.sendMessage(ChatColor.GOLD + "The restock task is NOT running atm! Please type \"/rs start\" to start restocking!-blah");
+	    			sender.sendMessage(ChatColor.GOLD + "You have entered too many args!");
 	    		}
 	    	}
 	    	return true;

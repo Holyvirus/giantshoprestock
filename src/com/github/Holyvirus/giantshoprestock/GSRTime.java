@@ -54,12 +54,11 @@ public class GSRTime {
     	GSR.log.log(Level.SEVERE, "Im at doTask!");
     	doTaskID = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(GSR, new Runnable() {
 			public void run() {
-	    		GSR.log.log(Level.SEVERE, "the doTaskID is: " + doTaskID);
 		    	GSR.log.log(Level.SEVERE, "Im at run()!");
        			GSR.lastTime = getTime();
            			GSRS.Restock();
        		}
-    	}, 20, restockday);
+    	}, getDelay(), restockday);
 		GSR.log.log(Level.SEVERE, "the doTaskID is: " + this.doTaskID);
     }
 
