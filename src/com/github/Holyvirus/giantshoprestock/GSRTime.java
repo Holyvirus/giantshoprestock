@@ -45,7 +45,7 @@ public class GSRTime {
 			int m = Integer.parseInt(data[1]);
 			this.runtime = h * 3600 + m * 60;
 			this.delay = (86400 - getTime()) + (86400 - (86400 - runtime));
-				if(this.delay >= 86400){
+				if(this.delay >= 86400 * restockday){
 					 this.delay = this.delay - 86400;
 				}
 		}catch(Exception e){
@@ -55,6 +55,7 @@ public class GSRTime {
     }
 
     long stopTime;
+    long stoppedTime;
     
     int runtime;
 	boolean initdelay;
@@ -74,10 +75,11 @@ public class GSRTime {
     int doTaskID;
     long whichdelay;
     
-    public void restartTask(CommandSender sender){
+    public void continueTask(CommandSender sender){
     	if(!Bukkit.getServer().getScheduler().isQueued(doTaskID)){
-	    	delay = getTime() - stopTime;
+	    	delay = restockday - (stopTime + (getTime() - stoppedTime));
 	    	doTask();
+	    	getDelay();
 	    	if(sender != null){
 				sender.sendMessage(ChatColor.RED + "The restock system has been restarted!");
 	    	}
@@ -96,12 +98,13 @@ public class GSRTime {
 		    	if(sender != null){
 					sender.sendMessage(ChatColor.RED + "The restock system has been stopped! Delays were saved if you wish to restart!");
 		    	}
+		    	stopTime = (restockday - timeLeft);
+		    	stoppedTime = getTime();
 		}else{
 			if(sender != null){
 				sender.sendMessage(ChatColor.RED + "The restock task is NOT running atm! Please type \"/rs start\" to start restocking!");
 			}
 		}
-    	stopTime = getTime();
     }
     
     public String getTimeLeft(){
@@ -113,7 +116,7 @@ public class GSRTime {
     	int TIMEINCREASE = Integer.parseInt(GSR.config.getString("TimeZoneIncrease"));
     	this.getDelay();
     	String format = String.format("%%0%dd", 2);
-    	long timeLeft = (GSR.lastTime + whichdelay) - getTime();
+    	timeLeft = (GSR.lastTime + whichdelay) - getTime();
     	GSR.log.log(Level.SEVERE, "lasttime : " + GSR.lastTime + ", which delay: " + whichdelay + ", gettime(): " + getTime());
         String seconds = String.format(format, timeLeft % 60);
         String minutes = String.format(format, (timeLeft % 3600) / 60);
@@ -122,4 +125,5 @@ public class GSRTime {
         String time =  days + " days, " + hours + " hours, " + minutes + " minutes and " + seconds + " seconds";
         return time;
     }
+    long timeLeft;
  }

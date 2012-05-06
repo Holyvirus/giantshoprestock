@@ -119,7 +119,10 @@ public class GiantShopRestock extends JavaPlugin{
 	    				}else if(args[0].equalsIgnoreCase("stop")){
 	    					GSRT.stopTask(sender);
 	    				}else if(args[0].equalsIgnoreCase("restart")){
-	    					GSRT.restartTask(sender);
+	    					GSRT.stopTask(sender);
+	    					GSRT.doTask();
+	    				}else if(args[0].equalsIgnoreCase("continue")){
+	    					GSRT.continueTask(sender);
 	    				}else{
 	    					sender.sendMessage(ChatColor.RED + "Please enter the arguements correctly!");
 	    				}
