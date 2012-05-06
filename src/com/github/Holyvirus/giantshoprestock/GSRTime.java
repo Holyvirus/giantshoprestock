@@ -36,39 +36,51 @@ public class GSRTime {
     String humanNowTime;
     
     public long getDelay(){
-    	String[] data = GSR.config.getString("RestockTime").split("\\:");
-		int h = Integer.parseInt(data[0]);
-		int m = Integer.parseInt(data[1]);
-		this.runtime = h * 3600 + m * 60;
-		long delay = (86400 - getTime()) + (86400 - (86400 - runtime));
-		if( delay >= 86400){
-			 delay = delay - 86400;
+    	try{
+	    	String[] data = GSR.config.getString("RestockTime").split("\\:");
+			int h = Integer.parseInt(data[0]);
+			int m = Integer.parseInt(data[1]);
+			this.runtime = h * 3600 + m * 60;
+			long delay = (86400 - getTime()) + (86400 - (86400 - runtime));
+				if( delay >= 86400){
+					 delay = delay - 86400;
+				}
+				return 200;
+		}catch(Exception e){
+			GSR.log.log(Level.SEVERE, "The restock time is not formatted correctly, it has to be: \"hours:minutes\"");
 		}
-		return delay;
+    	return 200;
     }
     
     int runtime;
+	boolean initdelay;
 	
     public void doTask(){
     	GSR.lastTime = getTime();
-    	GSR.log.log(Level.SEVERE, "Im at doTask!");
+    	GSRT.initdelay = true;
     	doTaskID = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(GSR, new Runnable() {
 			public void run() {
-		    	GSR.log.log(Level.SEVERE, "Im at run()!");
+				GSRT.initdelay = false;
        			GSR.lastTime = getTime();
            			GSRS.Restock();
        		}
     	}, getDelay(), restockday);
-		GSR.log.log(Level.SEVERE, "the doTaskID is: " + this.doTaskID);
     }
 
     int doTaskID;
+    long whichdelay;
     
     public String getTimeLeft(){
+    	if(initdelay == true){
+    		this.whichdelay = getDelay();
+    	}else if(initdelay == false){
+    		this.whichdelay = restockday;
+    	}
     	int TIMEINCREASE = Integer.parseInt(GSR.config.getString("TimeZoneIncrease"));
     	this.getDelay();
     	String format = String.format("%%0%dd", 2);
-    	long timeLeft = (GSR.lastTime + restockday) - getTime();
+    	long timeLeft = (GSR.lastTime + whichdelay) - getTime();
+    	GSR.log.log(Level.SEVERE, "lasttime : " + GSR.lastTime + ", which delay: " + whichdelay + ", gettime(): " + getTime());
         String seconds = String.format(format, timeLeft % 60);
         String minutes = String.format(format, (timeLeft % 3600) / 60);
         String hours = String.format(format, (timeLeft % 86400) / 3600 + TIMEINCREASE);
