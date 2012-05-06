@@ -111,18 +111,19 @@ public class GiantShopRestock extends JavaPlugin{
 	    			if(args.length == 1){
 	    				if(args[0].equalsIgnoreCase("start")){
 	    					if(!Bukkit.getServer().getScheduler().isQueued(GSRT.doTaskID)){
-	    	    			GSRT.doTask();
-	    	    			sender.sendMessage(ChatColor.GOLD + "The restock system has been started! Your next restock is in: ¤9" + GSRT.getTimeLeft());
+	    						GSRT.doTask();
+		    	    			sender.sendMessage(ChatColor.GOLD + "The restock system has been started! Your next restock is in: ¤9" + GSRT.getTimeLeft());
 	    					}else{
 	    						sender.sendMessage(ChatColor.RED + "The restock task is already running!");
 	    					}
 	    				}else if(args[0].equalsIgnoreCase("stop")){
 	    					GSRT.stopTask(sender);
 	    				}else if(args[0].equalsIgnoreCase("restart")){
-	    					GSRT.stopTask(sender);
-	    					GSRT.doTask();
-	    				}else if(args[0].equalsIgnoreCase("continue")){
-	    					GSRT.continueTask(sender);
+	    					if(!Bukkit.getServer().getScheduler().isQueued(GSRT.doTaskID)){
+		    					GSRT.stopTask(sender);
+		    					GSRT.doTask();
+		    	    			sender.sendMessage(ChatColor.GOLD + "The restock system has been started! Your next restock is in: ¤9" + GSRT.getTimeLeft());
+	    					}
 	    				}else{
 	    					sender.sendMessage(ChatColor.RED + "Please enter the arguements correctly!");
 	    				}
