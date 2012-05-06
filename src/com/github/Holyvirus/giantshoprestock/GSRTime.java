@@ -40,18 +40,20 @@ public class GSRTime {
     public long getDelay(){
     	try{
 	    	String[] data = GSR.config.getString("RestockTime").split("\\:");
-			int h = Integer.parseInt(data[0]);
-			int m = Integer.parseInt(data[1]);
-			this.runtime = h * 3600 + m * 60;
-			long delay = (86400 - getTime()) + (86400 * restockday - (86400 * restockday - runtime));
-				if(delay >= 86400 * restockday){
+			int h = Integer.parseInt(data[0]);//20
+			int m = Integer.parseInt(data[1]);//20
+			this.runtime = h * 3600 + m * 60;//73200
+			long delay = (86400 - getTime()) + (86400 * restockday - (86400 * restockday - runtime));//(86400 - 73149) + (86400 - (86400 - 73200)) = 86451
+			GSR.log.log(Level.SEVERE, "The delay is: " + delay);
+				if(delay > (86400 * restockday)){
 					 delay = delay - 86400;
 				}
+				GSR.log.log(Level.SEVERE, "The delay is: " + delay);
 			return delay;
 		}catch(Exception e){
 			GSR.log.log(Level.SEVERE, "The restock time is not formatted correctly, it has to be: \"hours:minutes\"");
+	    	return restockday;
 		}
-    	return restockday;
     }
     
     int runtime;
@@ -98,11 +100,15 @@ public class GSRTime {
     	this.getDelay();
     	String format = String.format("%%0%dd", 2);
     	timeLeft = (GSR.lastTime + whichdelay) - getTime();
-    	GSR.log.log(Level.SEVERE, "lasttime : " + GSR.lastTime + ", which delay: " + whichdelay + ", gettime(): " + getTime());
+    	GSR.log.log(Level.SEVERE, "lasttime : " + GSR.lastTime + ", which delay: " + whichdelay + ", gettime(): " + getTime() + ", initdelay: " +initdelay);
         String seconds = String.format(format, timeLeft % 60);
         String minutes = String.format(format, (timeLeft % 3600) / 60);
-        String hours = String.format(format, (timeLeft % 86400) / 3600 + TIMEINCREASE);
-        String days = String.format(format, (timeLeft % 31536000) / 86400);
+        int hours = Integer.parseInt(String.format(format, (timeLeft % 86400) / 3600));
+        int days = Integer.parseInt(String.format(format, (timeLeft % 31536000) / 86400));
+        if(hours > 24){
+        	hours = hours - 24;
+        	days += 1;
+        }
         String time =  days + " days, " + hours + " hours, " + minutes + " minutes and " + seconds + " seconds";
         return time;
     }

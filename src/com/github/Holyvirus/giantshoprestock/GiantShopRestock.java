@@ -124,8 +124,10 @@ public class GiantShopRestock extends JavaPlugin{
 		    					GSRT.doTask();
 		    	    			sender.sendMessage(ChatColor.GOLD + "The restock system has been started! Your next restock is in: ¤9" + GSRT.getTimeLeft());
 	    					}
+	    				}else if(args[0].equalsIgnoreCase("help")){
+	    					sender.sendMessage(ChatColor.DARK_AQUA + "blah");
 	    				}else{
-	    					sender.sendMessage(ChatColor.RED + "Please enter the arguements correctly!");
+	    					sender.sendMessage(ChatColor.RED + "Please enter the arguments correctly!");
 	    				}
 	    			}else if(args.length == 2){
 	    				if(args[0].matches("[0-9]+") && args[1].matches("[0-9]+")) {
@@ -165,7 +167,7 @@ public class GiantShopRestock extends JavaPlugin{
 	    				if(!Bukkit.getServer().getScheduler().isQueued(GSRT.doTaskID)){
 	    					if (sender.hasPermission("giantshop.restock")){
 	    							config.set("RestockDay", args[0]);
-	    							sender.sendMessage("The shops will restock every: " + args[0] + " days!");
+	    							sender.sendMessage(ChatColor.DARK_AQUA + "The shops will restock every: " + args[0] + " days!");
 	    							this.saveYamls();
 	    					}else{
 	    						sender.sendMessage(ChatColor.RED + "You do not have permission to use this command!");
@@ -173,7 +175,7 @@ public class GiantShopRestock extends JavaPlugin{
 	    				}
 	    		}else{
 					log.log(Level.SEVERE, "the doTaskID is: " + GSRT.doTaskID);
-	    			sender.sendMessage(ChatColor.GOLD + "You have entered too many args!");
+	    			sender.sendMessage(ChatColor.GOLD + "You have entered too many arguments!");
 	    		}
 	    	}
 	    	return true;
@@ -183,7 +185,7 @@ public class GiantShopRestock extends JavaPlugin{
 	    	ItemID FItem = GSItems.getItemIDByName(Item);
 	    	if(FItem != null){
 		    		getConfig().set("Restock." + Item, FAmt);
-		    		sender.sendMessage("You have set the item " + Item + " to be restocked by " + FAmt + " each restock!");
+		    		sender.sendMessage(ChatColor.DARK_AQUA + "You have set the item " + Item + " to be restocked by " + FAmt + " each restock!");
 		    		try {
 						getConfig().save(configFile);
 					} catch (IOException e) {
@@ -195,6 +197,7 @@ public class GiantShopRestock extends JavaPlugin{
 	    public void write(CommandSender sender, int FItem, int FType, int FAmt){
 	    	if(GSItems.isValidItem(FItem, FType)){
 	    		getConfig().set("Restock." + FItem, FAmt);
+	    		sender.sendMessage("You have set the item " + FItem + ":" + FType + " to be restocked by " + FAmt + " each restock!");
 	    		try {
 					getConfig().save(configFile);
 				} catch (IOException e) {
