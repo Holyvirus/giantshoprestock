@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 public class GSRTime {
 	
@@ -34,6 +36,7 @@ public class GSRTime {
     }
 	
     String humanNowTime;
+    long delay;
     
     public long getDelay(){
     	try{
@@ -41,16 +44,17 @@ public class GSRTime {
 			int h = Integer.parseInt(data[0]);
 			int m = Integer.parseInt(data[1]);
 			this.runtime = h * 3600 + m * 60;
-			long delay = (86400 - getTime()) + (86400 - (86400 - runtime));
-				if( delay >= 86400){
-					 delay = delay - 86400;
+			this.delay = (86400 - getTime()) + (86400 - (86400 - runtime));
+				if(this.delay >= 86400){
+					 this.delay = this.delay - 86400;
 				}
-				return 200;
 		}catch(Exception e){
 			GSR.log.log(Level.SEVERE, "The restock time is not formatted correctly, it has to be: \"hours:minutes\"");
 		}
-    	return 200;
+    	return restockday;
     }
+
+    long stopTime;
     
     int runtime;
 	boolean initdelay;
@@ -64,11 +68,41 @@ public class GSRTime {
        			GSR.lastTime = getTime();
            			GSRS.Restock();
        		}
-    	}, getDelay(), restockday);
+    	}, GSRT.delay, restockday);
     }
 
     int doTaskID;
     long whichdelay;
+    
+    public void restartTask(CommandSender sender){
+    	if(!Bukkit.getServer().getScheduler().isQueued(doTaskID)){
+	    	delay = getTime() - stopTime;
+	    	doTask();
+	    	if(sender != null){
+				sender.sendMessage(ChatColor.RED + "The restock system has been restarted!");
+	    	}
+    	}else{
+			if(sender != null){
+				sender.sendMessage(ChatColor.RED + "The restock task is already running!");
+			}else{
+				GSR.log.log(Level.INFO, "The restock task is already running!");
+			}
+    	}
+    }
+    
+    public void stopTask(CommandSender sender){
+    	if(Bukkit.getServer().getScheduler().isQueued(doTaskID)){
+			Bukkit.getServer().getScheduler().cancelTask(doTaskID);
+		    	if(sender != null){
+					sender.sendMessage(ChatColor.RED + "The restock system has been stopped! Delays were saved if you wish to restart!");
+		    	}
+		}else{
+			if(sender != null){
+				sender.sendMessage(ChatColor.RED + "The restock task is NOT running atm! Please type \"/rs start\" to start restocking!");
+			}
+		}
+    	stopTime = getTime();
+    }
     
     public String getTimeLeft(){
     	if(initdelay == true){

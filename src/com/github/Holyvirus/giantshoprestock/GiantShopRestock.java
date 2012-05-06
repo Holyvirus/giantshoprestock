@@ -60,6 +60,7 @@ public class GiantShopRestock extends JavaPlugin{
 	
 	@Override
 	public void onDisable() {
+		GSRT.stopTask(null);
 		log.log(Level.INFO, "[GiantShopRestock] Was successfully disabled!");
 	}
 
@@ -116,12 +117,9 @@ public class GiantShopRestock extends JavaPlugin{
 	    						sender.sendMessage(ChatColor.RED + "The restock task is already running!");
 	    					}
 	    				}else if(args[0].equalsIgnoreCase("stop")){
-	    					if(Bukkit.getServer().getScheduler().isQueued(GSRT.doTaskID)){
-	    						Bukkit.getServer().getScheduler().cancelTask(GSRT.doTaskID);
-	    						sender.sendMessage(ChatColor.RED + "The restock system has been stopped! All delays were reset!");
-	    					}else{
-	    		    			sender.sendMessage(ChatColor.RED + "The restock task is NOT running atm! Please type \"/rs start\" to start restocking!");
-	    					}
+	    					GSRT.stopTask(sender);
+	    				}else if(args[0].equalsIgnoreCase("restart")){
+	    					GSRT.restartTask(sender);
 	    				}else{
 	    					sender.sendMessage(ChatColor.RED + "Please enter the arguements correctly!");
 	    				}
@@ -157,7 +155,7 @@ public class GiantShopRestock extends JavaPlugin{
 	    				if(Bukkit.getServer().getScheduler().isQueued(GSRT.doTaskID)){
 	    					sender.sendMessage(ChatColor.GOLD + "The current time is: " + GSRT.humanNowTime + " the shop will next restock in: ¤9" + GSRT.getTimeLeft());
 	    				}else{
-	    					sender.sendMessage("I was here");
+    		    			sender.sendMessage(ChatColor.RED + "The restock task is NOT running atm! Please type \"/rs start\" to start restocking!");
 	    				}
 	    			}else if(args.length == 1){
 	    				if(!Bukkit.getServer().getScheduler().isQueued(GSRT.doTaskID)){
