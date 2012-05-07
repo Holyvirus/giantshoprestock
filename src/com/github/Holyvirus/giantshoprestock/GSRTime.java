@@ -13,6 +13,7 @@ public class GSRTime {
 		GSRstocker GSRS = new GSRstocker();
 		GiantShopRestock GSR = GiantShopRestock.getGR();
 		long restockday = GSR.config.getLong("RestockDay") *  86400;
+		long rawday = GSR.config.getLong("RestockDay");
 	
     public int getTime() {
     	int TIMEINCREASE = Integer.parseInt(GSR.config.getString("TimeZoneIncrease"));
@@ -40,12 +41,12 @@ public class GSRTime {
     public long getDelay(){
     	try{
 	    	String[] data = GSR.config.getString("RestockTime").split("\\:");
-			int h = Integer.parseInt(data[0]);//20
-			int m = Integer.parseInt(data[1]);//20
-			this.runtime = h * 3600 + m * 60;//73200
-			long delay = (86400 - getTime()) + (86400 * restockday - (86400 * restockday - runtime));//(86400 - 73149) + (86400 - (86400 - 73200)) = 86451
+			int h = Integer.parseInt(data[0]);
+			int m = Integer.parseInt(data[1]);
+			this.runtime = h * 3600 + m * 60;
+			long delay = (86400 - getTime()) + (86400 * rawday - (86400 * rawday - runtime));
 			GSR.log.log(Level.SEVERE, "The delay is: " + delay);
-				if(delay > (86400 * restockday)){
+				if(delay > (86400 * rawday)){
 					 delay = delay - 86400;
 				}
 				GSR.log.log(Level.SEVERE, "The delay is: " + delay);
